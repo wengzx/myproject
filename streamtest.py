@@ -18,7 +18,7 @@ import base64
 st.set_page_config(
         page_title="自动化接口测试平台",
 )
-from st_aggrid import AgGrid, DataReturnMode, GridUpdateMode, GridOptionsBuilder
+
 
 class MultiApp:
     def __init__(self):
