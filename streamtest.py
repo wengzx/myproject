@@ -7,12 +7,11 @@ import time
 import streamlit as st
 import requests
 import openpyxl
-import wget
+
 import pandas as pd
-import os
+
 import base64
-import numpy as np
-import sys
+
 
 
 # 设置页面标题
