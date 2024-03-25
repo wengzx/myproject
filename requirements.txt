@@ -1,3 +1,5 @@
 openpyxl
 schedule
 yagmail
+bs4
+re
