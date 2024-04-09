@@ -65,7 +65,8 @@ class apitest():
             final_result_color= PatternFill('solid',Color[1])
         wb=openpyxl.load_workbook(filename) #加载文件
         sheet=wb[sheetname] #读取sheet
-        sheet.cell(row=row,column=column).value=final_result.fill=final_result_color #将结果写入cell
+         #sheet.cell(row=row,column=column).value=final_result
+        sheet.cell(row=row,column=column,value=final_result).fill=final_result_color #将结果写入cell
         wb.save(filename) #保存文件
 
 
