@@ -7,6 +7,8 @@ import time
 import streamlit as st
 import requests
 import openpyxl
+from openpyxl.styles import Font
+from openpyxl.styles import  PatternFill  
 
 import pandas as pd
 
@@ -15,6 +17,7 @@ import base64
 import schedule   #定时任务
 
 import yagmail
+
 
 
 # 设置页面标题
@@ -52,6 +55,14 @@ class apitest():
 
     def write_result(self,filename,sheetname,row,column,final_result):
 
+        #Color=['c6efce','006100']#绿
+        #Color = ['ffc7ce', '9c0006']  #红
+        #Color = ['ffeb9c', '9c6500']  # 黄
+        Color=['c6efce','ffc7ce']
+        if final_result=='passed':
+            final_result= PatternFill('solid',Color[0])
+        else:
+            final_result= PatternFill('solid',Color[1])
         wb=openpyxl.load_workbook(filename) #加载文件
         sheet=wb[sheetname] #读取sheet
         sheet.cell(row=row,column=column).value=final_result #将结果写入cell
