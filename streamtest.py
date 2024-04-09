@@ -60,12 +60,12 @@ class apitest():
         #Color = ['ffeb9c', '9c6500']  # 黄
         Color=['c6efce','ffc7ce']
         if final_result=='passed':
-            final_result= PatternFill('solid',Color[0])
+            final_result_color= PatternFill('solid',Color[0])
         else:
-            final_result= PatternFill('solid',Color[1])
+            final_result_color= PatternFill('solid',Color[1])
         wb=openpyxl.load_workbook(filename) #加载文件
         sheet=wb[sheetname] #读取sheet
-        sheet.cell(row=row,column=column).value=final_result #将结果写入cell
+        sheet.cell(row=row,column=column).value=final_result.fill=final_result_color #将结果写入cell
         wb.save(filename) #保存文件
 
 
