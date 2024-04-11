@@ -58,7 +58,7 @@ class apitest():
         #Color=['c6efce','006100']#绿
         #Color = ['ffc7ce', '9c0006']  #红
         #Color = ['ffeb9c', '9c6500']  # 黄
-        Color=['c6efce','ffc7ce']
+        Color=['75BD42','FF0000']
         if final_result=='passed':
             final_result_color= PatternFill('solid',Color[0])
         else:
