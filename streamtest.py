@@ -1,10 +1,10 @@
 #-*- coding : utf-8-*-
 
-from gevent import monkey
+#from gevent import monkey
 # 把标准库中的thread/socket等给替换掉.
 # 这样我们在后面使用socket的时候能够跟寻常一样使用,
 # 无需改动不论什么代码,可是它变成非堵塞的了.
-monkey.patch_all()
+#monkey.patch_all()
 
 import gevent
 from  numpy import mean
