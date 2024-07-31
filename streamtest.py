@@ -1,5 +1,14 @@
 #-*- coding : utf-8-*-
 
+from gevent import monkey
+# 把标准库中的thread/socket等给替换掉.
+# 这样我们在后面使用socket的时候能够跟寻常一样使用,
+# 无需改动不论什么代码,可是它变成非堵塞的了.
+monkey.patch_all()
+
+import gevent
+from  numpy import mean
+
 
 import json
 import time
@@ -339,54 +348,67 @@ def convert_df(df):
 
 # 页面具体自定义内容
 
-def foo():
+def jiekou_test():
+    st.title("接口测试")
+    
+    environ=st.selectbox("请选择环境",['测试环境', '测试环境支付功能','正式环境' ],  #也可以用元组
+                               index = 1
+  )
+    if st.button("运行接口测试"):
+        if environ=='正式环境':
+            ma=master_envir()
+        if environ=='测试环境':
+            ma=test_envir()
+        if environ=='测试环境支付功能':
+            ma=test_pay()
+            
+            
+   
+ 
+           
+def test_envir():
+
+    st.write('=============开始测试=============')
+    aa = apitest()
+    cases = aa.read_data("test_api.xlsx", "Sheet1")
+    # print(cases)
+    pp = aa.api_test(cases)
+    st.text(pp)
+    for p in pp:
+        st.text(p)
+    st.write('==========测试结束=========')
+    aa.testreport('test')
+
+
+def test_pay():
+
+    st.write('=============开始测试=============')
+    aa = apitest()
+    cases = aa.read_data("pay_api.xlsx", "Sheet1")
+    # print(cases)
+    pp = aa.api_test(cases)
+    st.text(pp)
+    for p in pp:
+        st.text(p)
+        if "失败" in p:
+            print(222)
+            # st.markdown(":red[{p}]",p)
+    st.write('==========测试结束=========')
+    aa.testreport('pay')
+
+
+def master_envir():
     # st.title("请开始你的测试吧！！！")
-
-
-    if st.button('测试环境接口测试'):
-        st.write('=============开始测试=============')
-        aa = apitest()
-        cases = aa.read_data("test_api.xlsx", "Sheet1")
-        # print(cases)
-        pp = aa.api_test(cases)
-        st.text(pp)
-        for p in pp:
-            st.text(p)
-        st.write('==========测试结束=========')
-        aa.testreport('test')
-
-    if st.button('测试环境支付功能测试'):
-        st.write('=============开始测试=============')
-        aa = apitest()
-        cases = aa.read_data("pay_api.xlsx", "Sheet1")
-        # print(cases)
-        pp = aa.api_test(cases)
-        st.text(pp)
-        for p in pp:
-            st.text(p)
-            if "失败" in p:
-                print(222)
-                # st.markdown(":red[{p}]",p)
-        st.write('==========测试结束=========')
-        aa.testreport('pay')
-
-        # 定时任务按钮
-
-
-
-
-def bar():
-    # st.title("请开始你的测试吧！！！")
-    if st.button('正式环境接口测试'):
-        st.write('============测试开始==============')
-        aa = apitest()
-        cases = aa.read_data("main_api.xlsx", "Sheet1")
-        pp = aa.api_test(cases)
-        st.text(pp)
-        for p in pp:
-            st.text(p)
-        st.write('==========测试结束=========')
-        aa.testreport()
+    #if st.button('正式环境接口测试'):
+    st.write('============测试开始==============')
+    aa = apitest()
+    cases = aa.read_data("main_api.xlsx", "Sheet1")
+    pp = aa.api_test(cases)
+    st.text(pp)
+    for p in pp:
+        st.text(p)
+    st.write('==========测试结束=========')
+    aa.testreport("main")
 
 
 def gen():
@@ -454,26 +476,127 @@ def diy():
         print(222)
 
 def time_task():
+    st.title("定时任务")
+    
+    form=st.form("my_form")
+        
+    renwu = form.selectbox("选择开始或者停止定时任务",['开始', '停止', ],  #也可以用元组
+                               index = 1
+  )
+    nn=form.form_submit_button("执行")
+   
     aa = apitest()
-    if st.button("停止定时任务"):
-        st.write("已经停止定时任务")
-        aa.task(name=2)
+    if renwu=='停止':
+        if nn:
+            aa.task(name=2)
+            st.write("已经停止定时任务")
+           
+    elif(renwu=='开始'):
+         if nn:
+             aa.task(name=1)
+             st.write("已经开启定时任务")
 
-    if st.button("开启定时任务(每天11点半执行定时任务)"):
-        aa.task(name=1)
+
+#压测需要调用函数
+class ya:
+    
+    def __init__(self,url,users,numbers):
+        
+        self.users=int(users.strip()) #用户数
+        self.numbers=int(numbers.strip()) #请求次数
+        self.re_url=url
+        
+        st.write("请求URL: {url}".format(url=self.re_url))
+        
+        print("请求URL: {url}".format(url=self.re_url))
+        st.write("用户数：{}，循环次数: {}".format(self.users,self.numbers))
+        print("用户数：{}，循环次数: {}".format(self.users,self.numbers))
+        st.write("============== Running ===================")
+
+        self.pass_numbers=0
+
+        self.fail_numbers=0
+        
+        self.run_time_list=[]
+        
+        
+    
+    
+
+
+    def running(self):
+        
+        
+        global pass_numbers
+        global fail_numbers
+        st.write("456456")
+        
+        for _ in range(self.numbers):
+            start_time=time.time()
+            r=requests.get(self.re_url)
+        
+            if r.status_code==200:
+                self.pass_numbers=self.pass_numbers+1
+                print(".",end="")
+                st.write(".")
+            else:
+                self.fail_numbers==self.fail_numbers+1
+                print("F",end="")
+                st.write("F")
+            end_time=time.time()
+            run_time=round(end_time-start_time,4)
+            self.run_time_list.append(run_time)
+        
+        
+        
+        
+                
+
+# 调用gevet协程模块的spawn函数 
+    def bingfa(self):
+        jobs=[gevent.spawn(self.running) for _url in range(self.users)]
+        gevent.wait(jobs)
+
+        st.write("\n")
+
+        st.write(" ============== Results ===================")
+
+        st.write("最大: {} s".format(str(max(self.run_time_list))))
+
+        st.write("最小: {} s".format(str(min(self.run_time_list))))
+
+        st.write("平均: {} s".format(str(round(mean(self.run_time_list), 4))))
+
+        st.write("请求成功", self.pass_numbers)
+
+        st.write("请求失败", self.fail_numbers)
+
+        st.write("============== end ===================")     
 
 
 
+def yace():
+    st.title("性能测试")
+    url=st.text_input("请输入url")
+    users=st.text_input("请输入用户数")
+    
+    numbers=st.text_input("请输入请求次数")
+    
+    if st.button("开始压测"):
+        
+        
+        aa=ya(url,users,numbers)
+        aa.bingfa()
 
 
 
 
 app = MultiApp()
-app.add_app("测试环境", foo)
-app.add_app("正式环境", bar)
-app.add_app("接口管理", gen)
+app.add_app("接口测试", jiekou_test)
+#app.add_app("正式环境", bar)
+#app.add_app("接口管理", gen)
 app.add_app("自定义接口数据测试", diy)
 app.add_app("定时任务", time_task)
-
+app.add_app("性能测试", yace)
 
 app.run()
