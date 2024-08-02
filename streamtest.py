@@ -530,7 +530,8 @@ class ya:
         global pass_numbers
         global fail_numbers
         st.write("开始下一个用户")
-        
+
+        st.set_option(default.text_interline_spacing,0)
         for _ in range(self.numbers):
             start_time=time.time()
             r=requests.get(self.re_url)
