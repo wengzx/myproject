@@ -529,8 +529,7 @@ class ya:
         
         global pass_numbers
         global fail_numbers
-        st.write("开始下一个用户")
-
+       
         
         for _ in range(self.numbers):
             start_time=time.time()
