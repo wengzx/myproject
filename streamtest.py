@@ -538,11 +538,11 @@ class ya:
             if r.status_code==200:
                 self.pass_numbers=self.pass_numbers+1
                 print(".",end="")
-                st.write(".",end="")
+                st.text(".",end="")
             else:
                 self.fail_numbers==self.fail_numbers+1
                 print("F",end="")
-                st.write("F",end="")
+                st.text("F",end="")
             end_time=time.time()
             run_time=round(end_time-start_time,4)
             self.run_time_list.append(run_time)
