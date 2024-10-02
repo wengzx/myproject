@@ -1,8 +1,7 @@
-import cv2
-import numpy as np
+
 import streamlit as st
 import ddddocr
-from html5lib.html5parser import impliedTagToken
+
 
 import  requests
 from sympy.logic.algorithms.dpll import pl_true_int_repr
