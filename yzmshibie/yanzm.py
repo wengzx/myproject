@@ -35,10 +35,12 @@ if st.button("识别"):
     
         # 获取验证码图片地址
         png = session.get(url=img_code_url)  # 请求验证码
+
+        print(img_code_url)
        
         
         # 将验证码保存本地
-        filename = "a8.png"  # 定义一个图片地址
+        filename = "test.png"  # 定义一个图片地址
         file = open(filename, "wb")  # 以二进制打开一个文件
         file.write(png.content)  # 写入二进制文件
         file.close()  # 关闭文件
