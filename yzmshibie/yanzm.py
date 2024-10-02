@@ -30,18 +30,18 @@ img_code_url=st.text_input("验证码地址")
 
 # 将request 开启会话
 session = requests.session()
-
-if "https://" in img_code_url  and img_code_url is not None:
-
-    # 获取验证码图片地址
-    png = session.get(url=img_code_url)  # 请求验证码
-    print(png)
-
-    # 将验证码保存本地
-    filename = "a8.png"  # 定义一个图片地址
-    file = open(filename, "wb")  # 以二进制打开一个文件
-    file.write(png.content)  # 写入二进制文件
-    file.close()  # 关闭文件
+if st.button("识别"):
+    if "https://" in img_code_url  and img_code_url is not None:
+    
+        # 获取验证码图片地址
+        png = session.get(url=img_code_url)  # 请求验证码
+        print(png)
+    
+        # 将验证码保存本地
+        filename = "a8.png"  # 定义一个图片地址
+        file = open(filename, "wb")  # 以二进制打开一个文件
+        file.write(png.content)  # 写入二进制文件
+        file.close()  # 关闭文件
 
 
 ocr = ddddocr.DdddOcr(show_ad=False) # 实例化
