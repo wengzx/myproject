@@ -2,7 +2,6 @@ import ddddocr # 导入 ddddocr
 import requests
 import json
 import base64
-from matplotlib.font_manager import json_load
 
 
 code_url = "https://www.sssgame.com/api/member/getCaptcha?type=login&timestamp=1727693541838"  # 验证码图片地址
