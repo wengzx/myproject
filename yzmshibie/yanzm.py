@@ -35,7 +35,7 @@ if st.button("识别"):
     
         # 获取验证码图片地址
         png = session.get(url=img_code_url)  # 请求验证码
-        print(png.statuscode)
+        print(png.status_code)
         print(15646)
         # 将验证码保存本地
         filename = "a8.png"  # 定义一个图片地址
