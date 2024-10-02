@@ -3,3 +3,8 @@ schedule
 yagmail
 pymysql
 gevent
+ddddocr                                            
+requests                                                          
+json                                                              
+base64
+
