@@ -36,6 +36,22 @@ if st.button("识别"):
         # 获取验证码图片地址
         png = session.get(url=img_code_url)  # 请求验证码
 
+        ss = json.loads(png.text)
+
+        img_code_url1 = ss['data']["image"]
+
+        try:
+            # 截取uri的data:image/png;base64后端的uri
+            img_code_url = img_code_url1.split(",")[1]
+            # 这个就是解析
+            ss = base64.b64decode(img_code_url)
+            print(ss)
+            
+        except Exception as e:
+            print(f"base64_to_img error:{e}")
+
+
+
         print(img_code_url)
        
         
