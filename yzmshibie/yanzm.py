@@ -36,9 +36,9 @@ if st.button("识别"):
         # 获取验证码图片地址
         png = session.get(url=img_code_url)  # 请求验证码
 
-        ss = json.loads(ss)
+        aa = json.loads(png.text)
 
-        img_code_url1 = ss['data']["image"]
+        img_code_url1 = aa['data']["image"]
 
         try:
             # 截取uri的data:image/png;base64后端的uri
