@@ -2,7 +2,7 @@
 import streamlit as st
 import ddddocr
 import json
-
+import base64
 import  requests
 from sympy.logic.algorithms.dpll import pl_true_int_repr
 
