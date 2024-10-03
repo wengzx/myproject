@@ -36,7 +36,7 @@ if st.button("识别"):
         # 获取验证码图片地址
         png = session.get(url=img_code_url)  # 请求验证码
 
-        ss = json.loads(png.text)
+        ss = json.loads(ss)
 
         img_code_url1 = ss['data']["image"]
 
