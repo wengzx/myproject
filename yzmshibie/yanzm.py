@@ -58,7 +58,7 @@ if st.button("识别"):
         # 将验证码保存本地
         filename = "test.png"  # 定义一个图片地址
         file = open(filename, "wb")  # 以二进制打开一个文件
-        file.write(png.content)  # 写入二进制文件
+        file.write(ss)  # 写入二进制文件
         file.close()  # 关闭文件
 
 
