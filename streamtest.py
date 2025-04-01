@@ -561,15 +561,15 @@ class ya:
 
         st.write(" ============== Results ===================")
 
-        st.write("最大: {} s".format(str(max(self.run_time_list))))
+        st.write("最大时间: {} s".format(str(max(self.run_time_list))))
 
-        st.write("最小: {} s".format(str(min(self.run_time_list))))
+        st.write("最小时间: {} s".format(str(min(self.run_time_list))))
 
-        st.write("平均: {} s".format(str(round(mean(self.run_time_list), 4))))
+        st.write("平均时间: {} s".format(str(round(mean(self.run_time_list), 4))))
 
-        st.write("请求成功", self.pass_numbers)
+        st.write("请求成功次数", self.pass_numbers)
 
-        st.write("请求失败", self.fail_numbers)
+        st.write("请求失败次数", self.fail_numbers)
 
         st.write("============== end ===================")     
 
