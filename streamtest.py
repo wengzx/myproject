@@ -440,7 +440,7 @@ def gen():
 # 自定义接口管理页面调用方法
 
 def diy():
-
+    st.write('============测试开始==============')
     aa = apitest()
     aa.testreport('test')
 
