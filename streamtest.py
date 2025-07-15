@@ -440,7 +440,7 @@ def gen():
 # 自定义接口管理页面调用方法
 
 def diy():
-    st.write('============测试开始==============')
+    
     aa = apitest()
     aa.testreport('test')
 
@@ -455,6 +455,7 @@ def diy():
         head, sep, tail = str(up_file.name).partition(".")
         st.write("文件名称是：" + str(head))
         st.write("文件类型是：" + str(tail))
+        st.write('============测试开始==============')
     #        sep是上传文件的文件名何文件类型的分隔符
         if tail=="xls" or tail=="xlsx":
             # df=pd.read_excel(up_file)
