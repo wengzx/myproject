@@ -26,8 +26,7 @@ import base64
 import schedule   #定时任务
 
 import yagmail
-
-
+from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 # 设置页面标题
 st.set_page_config(
@@ -63,11 +62,12 @@ class apitest():
     # 写入excel文件结果
 
     def write_result(self,filename,sheetname,row,column,final_result):
+        print(filename)
 
         #Color=['c6efce','006100']#绿
-        #Color = ['ffc7ce', '9c0006']  #红
+        Color = ['ffc7ce', '9c0006']  #红
         #Color = ['ffeb9c', '9c6500']  # 黄
-        Color=['75BD42','FF0000']
+        # Color=['75BD42','FF0000']
         if final_result=='passed':
             final_result_color= PatternFill('solid',Color[0])
         else:
@@ -81,7 +81,7 @@ class apitest():
 
     # 读取excel文件
 
-    def read_data(_self,filename,sheetname):
+    def read_data(self,filename,sheetname):
         wb=openpyxl.load_workbook(filename) #加载工作薄
         sheet=wb[sheetname] #获取表单
         max_row=sheet.max_row #获取最大行数
@@ -105,7 +105,13 @@ class apitest():
 
     # 断言结果是否与excel预期结果一致
 
-    def duanyan(self,response,msg,case_id,url):
+    def duanyan(self,response,real_response,case_id,url):
+            print("断言情况如下")
+            print(response)
+            print(real_response)
+            print(case_id)
+
+
             bb={}  #定义一个空字典
             print(type(response))
 
@@ -122,11 +128,11 @@ class apitest():
                 print(real_msg)
                 # sys.exit()
 
-                print("预期结果{}".format(msg))
-                print("实际结果{}".format((real_msg)))
+                print("预期结果{}".format(response))
+                print("实际结果{}".format((real_response)))
 
 
-                if real_msg==msg:             #如果返回msg和预期结果msg一致
+                if response==real_response:             #如果返回msg和预期结果msg一致
                     print("第{}条用例通过".format(case_id))
                     final_re="passed"
                     mm="{}条".format(case_id)+"{}接口请求成功".format(url)
@@ -134,30 +140,48 @@ class apitest():
                 else:                      ##如果返回msg和预期结果msg一致
                     print("第{}条用例不通过".format(case_id))
                     final_re="failed"
-                    mm = "{}条".format(case_id)+"{}接口请求失败".format(url)+real_msg
+                    mm = "{}条".format(case_id)+"{}接口请求失败".format(url)+str(real_response)
                 # 写入用例通过结果
                 bb['final_re']=final_re
                 bb['mm']=mm
                 return bb
 
 
-    # 生成测试报告
-
-    def testreport(self,databiao):   #传入databiao
+    # 下载模板
+    def test_demo(self,databiao):   #传入databiao
         biao={"main":"main_api.xlsx","test":"test_api.xlsx","pay":"pay_api.xlsx"}   #将文件用字典的键值存储起来
         dataxlsx=biao[databiao]    #获取excel文件名
-        print(dataxlsx)
+        print("模板文件是"+str(dataxlsx))
+        print("开始下载模板")
         now=int(time.time())     #获取时间
         data = open(dataxlsx, 'rb').read()  # 以只读模式读取且读取为二进制文件
 
         b64 = base64.b64encode(data).decode('UTF-8')  # 解码并加密为base64
-        href = f'<a href="data:file/data;base64,{b64}" download="{now}_myresults.xlsx">下载测试报告</a>'  # 定义下载链接，默认的下载文件名是myresults.xlsx
+        href = f'<a href="data:file/data;base64,{b64}" download="{now}_myresults.xlsx">下载测试模板</a>'  # 定义下载链接，默认的下载文件名是myresults.xlsx
+        st.markdown(href, unsafe_allow_html=True)  # 输出到浏览器
+
+    # 生成测试报告
+    def test_report(self,filename):   #传入databiao
+        # biao={"main":"main_api.xlsx","test":"test_api.xlsx","pay":"pay_api.xlsx"}   #将文件用字典的键值存储起来
+        filename=filename    #获取excel文件名
+        print("报告文件是"+str(filename))
+        now=int(time.time())     #获取时间
+        data = open(filename, 'rb').read()  # 以只读模式读取且读取为二进制文件
+
+        b64 = base64.b64encode(data).decode('UTF-8')  # 解码并加密为base64
+        href = f'<a href="data:file/data;base64,{b64}" download="{now}_测试报告.xlsx">下载测试报告</a>'  # 定义下载链接，默认的下载文件名是myresults.xlsx
         st.markdown(href, unsafe_allow_html=True)  # 输出到浏览器
 
 
-    # 测试所有接口
 
-    def api_test(self,cases): #传入读取到的测试用例数据
+
+    # 测试所有接口
+    def api_test(self,cases,filename=None): #传入读取到的测试用例数据
+
+        if filename is not None:
+            filename=filename
+            print("111"+str(filename))
+
         self.token=''       #定义token
         # print(cases)
         kk=[]
@@ -167,8 +191,8 @@ class apitest():
                 baogao="表格第{}条".format(case_id+1) + "内容为空,请删除此行"
                 print(baogao)
                 continue
-            print(case)
-            print(type(case))
+            print("用例数据："+str(case))
+            print("用例类型："+str(type(case)))
 
             name=case.get("name") #从列表中取出name
             case_id=case.get("case_id") #从列表中取出case_id
@@ -179,57 +203,64 @@ class apitest():
             if 'token' in headers :    #如果请求头包含token
                 print(2223)
                 headers['token']=self.token  #将全局变量token赋值请求头的token
-            else:
-               pass
-
-            print("data数据")
-            print(type(case["data"]))
-            print(case["data"])
 
             try:
                 data=eval(case.get("data"))   #获取data的参数的值
             except Exception as e:
-                print(e)
+                print("异常错误："+str(e))
                 err="请检查data参数里面是否有值未加双引号"
-            print(333)
+
             # data=eval(case.get("data"))#从列表中取出data注意取出来的是一个字符串，用eval（）函数可以去掉外面的双引号，直接用内部的值；
             # 将旧的token更换为新token
             data['token']=self.token
-            print( "tokne"+data['token'])
+            print( "token"+data['token'])
 
             response=eval(case.get("response"))#从列表中取出response
+            print(response)
+
 
             msg=response.get("msg")#从response中取出msg
             print(case['case_id'])
 
             if method=="get": #判断请求方式
-                response=requests.get(url=url,headers=headers,data=data)
+                try:
+                    get_res=requests.get(url=url,headers=headers,params=data)
+                except Exception as e:
+                    st.error("文件请求地址错误，请检查文件")
+                print("get请求:" + str(get_res))
+                real_response = get_res.json()
+                print(real_response)
 
             else:   #这是post请求
-                res=requests.post(url=url,headers=headers,json=data,verify=False)#调用请求方法，传入从列表取出的url，data,hedaers
-                response = res.json()   #返回数据json化成python可读的数据
-                aa=type(response)
-                print(aa)
+                try:
+                    res=requests.post(url=url,headers=headers,json=data,verify=False)#调用请求方法，传入从列表取出的url，data,hedaers
+                except Exception as e:
+                    st.error("文件请求地址错误，请检查文件")
+                real_response = res.json()   #返回数据json化成python可读的数据
+                aa=type(real_response)
 
-
-                rstoken=response["data"]
+                rstoken=real_response["data"]
                 print(rstoken)
                 if 'token' in rstoken:      #如果返回数据有token
-                    print(rstoken['token'])
+                    print("返回token"+rstoken['token'])
 
                     tokens=rstoken['token']
-                    self.token = tokens      #将token的值赋值给全职变量self.token
+                    # 将token的值赋值给全局变量self.token
+                    self.token = tokens
                     print(self.token)
+            print(msg)
+            # 调用断言方法返回通过结果列表
+            bb = self.duanyan(response,real_response,case_id, url)
+            print(bb)
+            # 调用写入excel函数
 
-
-
-            bb = self.duanyan(response, msg, case_id, url) #调用断言方法返回通过结果列表
-            self.write_result("test_api.xlsx", "Sheet1", case_id+1, 8, bb['final_re'])#调用写入excel函数
+            self.write_result(filename, "Sheet1", case_id+1, 8, bb['final_re'])#调用写入excel函数
             baogao=bb['mm']+err
             print(baogao)
-            if "支付" in name:    #如果接口名字有支付两个字
-                kk.append(name)
-                self.write_result("pay_api.xlsx", "Sheet1", case_id + 1, 8, bb['final_re'])  #写入支付接口excel文件
+            # 如果接口名字有支付两个字
+            # if "支付" in name:
+            #     kk.append(name)
+            #     self.write_result("pay_api.xlsx", "Sheet1", case_id + 1, 8, bb['final_re'])  #写入支付接口excel文件
             kk.append(baogao)
 
         return kk   #返回内容
@@ -347,7 +378,6 @@ def convert_df(df):
 
 
 # 页面具体自定义内容
-
 def jiekou_test():
     st.title("接口测试")
     
@@ -361,27 +391,30 @@ def jiekou_test():
             ma=test_envir()
         if environ=='测试环境支付功能':
             ma=test_pay()
-            
-            
-   
- 
-           
-def test_envir():
 
+# 测试环境
+def test_envir():
+    '''
+   测试环境
+    '''
     st.write('=============开始测试=============')
     aa = apitest()
+    # 读取数据
     cases = aa.read_data("test_api.xlsx", "Sheet1")
-    # print(cases)
+    # 执行请求
     pp = aa.api_test(cases)
     st.text(pp)
     for p in pp:
         st.text(p)
     st.write('==========测试结束=========')
-    aa.testreport('test')
+    aa.test_report('test')
 
 
+# 测试环境支付功能
 def test_pay():
-
+    '''
+   测试环境支付功能
+    '''
     st.write('=============开始测试=============')
     aa = apitest()
     cases = aa.read_data("pay_api.xlsx", "Sheet1")
@@ -394,12 +427,15 @@ def test_pay():
             print(222)
             # st.markdown(":red[{p}]",p)
     st.write('==========测试结束=========')
-    aa.testreport('pay')
+    aa.test_report('pay')
 
-
+#if st.button('正式环境接口测试'):
+# 测试环境
 def master_envir():
+    '''
+  测试环境
+    '''
     # st.title("请开始你的测试吧！！！")
-    #if st.button('正式环境接口测试'):
     st.write('============测试开始==============')
     aa = apitest()
     cases = aa.read_data("main_api.xlsx", "Sheet1")
@@ -408,10 +444,13 @@ def master_envir():
     for p in pp:
         st.text(p)
     st.write('==========测试结束=========')
-    aa.testreport("main")
+    aa.test_report("main")
 
-
+# 接口管理
 def gen():
+    '''
+    接口管理
+    '''
     st.title("接口管理")
     df1 = pd.read_excel('excel1.xlsx')
     data6 = df1.iloc[:, [0]].values
@@ -438,44 +477,93 @@ def gen():
 
 
 # 自定义接口管理页面调用方法
-
 def diy():
-    
-    aa = apitest()
-    aa.testreport('test')
 
+    # 实例化apitest()
+    aa = apitest()
     # st.markdown(get_binary_file_download_html('1.xlsx',"表格"),unsafe_allow_html=True)
-    #
+
     st.write("<h5 style='color: red;'>请先下载测试报告模板，自定义接口数据再上传文件进行测试</h5>", unsafe_allow_html=True)
 
+    # 显示测试模板按钮
+    # aa.test_demo('test')
+    file_path="test_api.csv"
+
+    with open(file_path,'rb') as f:
+        st.download_button(label='下载模板', data=f, file_name='接口用例模板.xlsx')
+    # with open("test_api.xlsx", 'rb') as my_file:
+    #     st.download_button(label='下载模板', data=my_file, file_name='filename.xlsx',
+    #                        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+    # 获取上传文件
     up_file = st.file_uploader("上传文件", type=["xls", "xlsx", "csv"])
+    print("打印上传文件数据")
     print(up_file)
     if up_file is not None:
-        print(222)
+        print("上传文件不为空")
         head, sep, tail = str(up_file.name).partition(".")
         st.write("文件名称是：" + str(head))
         st.write("文件类型是：" + str(tail))
-        st.write('============测试开始==============')
+
     #        sep是上传文件的文件名何文件类型的分隔符
         if tail=="xls" or tail=="xlsx":
-            # df=pd.read_excel(up_file)
-            # st.table(df)
+            st.write('============测试开始==============')
+            pass
+            # 获取文件字节内容
+            file_bytes = up_file.read()
+
+            # 将文件保存到本地
+            save_path = f"./{up_file.name}"
+            with open(save_path, "wb") as f:
+                f.write(file_bytes)
+
+            st.success(f"文件已保存到: {save_path}")
+            filemame=up_file.name
+            print("文件名称"+str(filemame))
+
             aa = apitest()
-            cases = aa.read_data("test_api.xlsx", "Sheet1")
-            # print(cases)
-            pp = aa.api_test(cases)
+            cases = aa.read_data(up_file, "Sheet1")
+            print("测试用例"+str(cases))
+            pp = aa.api_test(cases,filemame)
+            print("打印用例数据")
             st.text(pp)
             for p in pp:
                 st.text(p)
             st.write('==========测试结束=========')
-            aa.testreport('test')
+            aa.test_report(filemame)
 
-        elif tail=="csv":
-            df=pd.read_csv(up_file)
-            st.table(df)
-    else:
-        print(222)
+        else:
+            print("文件格式不符合要求")
+            st.error("文件格式不符合要求")
+            msg = "文件格式不符合要求"
+            return msg
 
+    #     if tail=="xls" or tail=="xlsx":
+    #         df=pd.read_excel(up_file)
+    #         st.table(df)
+    #         diy_data=df.to_csv()
+    #         print(diy_data)
+    #         print("df"+str(df))
+    #
+    #         aa = apitest()
+    #         cases = aa.read_data(up_file, "Sheet1")
+    #         print("测试用例"+str(cases))
+    #         pp = aa.api_test(cases)
+    #         print("打印用例数据")
+    #         st.text(pp)
+    #         for p in pp:
+    #             st.text(p)
+    #         st.write('==========测试结束=========')
+    #         aa.test_report('test')
+    #
+    #     if tail=="csv":
+    #         df=pd.read_csv(up_file)
+    #         st.table(df)
+    #
+    #     else:
+    #         msg="文件格式不符合要求"
+    #         return msg
+# 定时任务
 def time_task():
     st.title("定时任务")
     
@@ -500,7 +588,8 @@ def time_task():
 
 #压测需要调用函数
 class ya:
-    
+
+
     def __init__(self,url,users,numbers):
         
         self.users=int(users.strip()) #用户数
@@ -520,17 +609,11 @@ class ya:
         
         self.run_time_list=[]
         
-        
-    
-    
-
 
     def running(self):
-        
-        
+
         global pass_numbers
         global fail_numbers
-       
         
         for _ in range(self.numbers):
             start_time=time.time()
@@ -547,11 +630,6 @@ class ya:
             end_time=time.time()
             run_time=round(end_time-start_time,4)
             self.run_time_list.append(run_time)
-        
-        
-        
-        
-                
 
 # 调用gevet协程模块的spawn函数 
     def bingfa(self):
@@ -574,8 +652,7 @@ class ya:
 
         st.write("============== end ===================")     
 
-
-
+# 性能测试
 def yace():
     st.title("性能测试")
     url=st.text_input("请输入url")
@@ -590,8 +667,6 @@ def yace():
         aa.bingfa()
 
 
-
-
 app = MultiApp()
 app.add_app("接口测试", jiekou_test)
 #app.add_app("正式环境", bar)
@@ -599,5 +674,6 @@ app.add_app("接口测试", jiekou_test)
 app.add_app("自定义接口数据测试", diy)
 app.add_app("定时任务", time_task)
 app.add_app("性能测试", yace)
+
 
 app.run()
