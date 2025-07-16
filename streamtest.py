@@ -517,7 +517,7 @@ def diy():
             with open(save_path, "wb") as f:
                 f.write(file_bytes)
 
-            st.success(f"文件已保存到: {save_path}")
+            # st.success(f"文件已保存到: {save_path}")
             filemame=up_file.name
             print("文件名称"+str(filemame))
 
