@@ -487,7 +487,7 @@ def diy():
 
     # 显示测试模板按钮
     # aa.test_demo('test')
-    file_path="test_api.csv"
+    file_path="test_api.xlsx"
 
     with open(file_path,'rb') as f:
         st.download_button(label='下载模板', data=f, file_name='接口用例模板.xlsx')
