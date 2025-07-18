@@ -1,5 +1,5 @@
-import requests
-import testxl
+from 权和益 import testxl
+
 
 # def write_result(self, filename, sheetname, row, column, final_result):
 #     wb = openpyxl.load_workbook(filename)
@@ -24,7 +24,7 @@ def read_data(filename, sheetname):
         case_list.append(dict1)
     return case_list
 
-cases = read_data("test_api.xlsx", "Sheet1")
+cases = read_data("../test_api.xlsx", "Sheet1")
 
 print(cases)
 # for case in cases:

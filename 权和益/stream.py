@@ -167,7 +167,7 @@ class apitest():
             else:   #这是post请求
                 response=requests.post(url=url,headers=headers,json=data,verify=False)#调用请求方法，传入从列表取出的url，data,hedaers
             bb = self.duanyan(response, msg, case_id, url) #调用断言方法返回通过结果列表
-            self.write_result("test_api.xlsx", "Sheet1", case_id+1, 8, bb['final_re'])#调用写入excel函数
+            self.write_result("../test_api.xlsx", "Sheet1", case_id + 1, 8, bb['final_re'])#调用写入excel函数
             baogao=bb['mm']
             kk.append(baogao)
 
